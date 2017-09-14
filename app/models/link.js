@@ -1,7 +1,7 @@
 var db = require('../config');
 var crypto = require('crypto');
 
-var Link = db.Model.extend({
+var Link = Backbone.Model.extend({
   tableName: 'urls',
   hasTimestamps: true,
   defaults: {
