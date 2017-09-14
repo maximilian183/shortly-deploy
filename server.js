@@ -1,4 +1,4 @@
-var app = require('./server-config.js');
+var app = require('./shortly.js');
 
 var port = 4568;
 
