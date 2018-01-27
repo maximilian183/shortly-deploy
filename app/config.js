@@ -1,69 +1,32 @@
-var path = require('path');
-var knex = require('knex')({
-  client: 'sqlite3',
-  connection: {
-    filename: path.join(__dirname, '../db/shortly.sqlite')
-  },
-  useNullAsDefault: true
-});
-var db = require('bookshelf')(knex);
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost:27017');
 
-db.knex.schema.hasTable('urls').then(function(exists) {
-  if (!exists) {
-    db.knex.schema.createTable('urls', function (link) {
-      link.increments('id').primary();
-      link.string('url', 255);
-      link.string('baseUrl', 255);
-      link.string('code', 100);
-      link.string('title', 255);
-      link.integer('visits');
-      link.timestamps();
-    }).then(function (table) {
-      console.log('Created Table', table);
-    });
-  }
-});
-
-db.knex.schema.hasTable('clicks').then(function(exists) {
-  if (!exists) {
-    db.knex.schema.createTable('clicks', function (click) {
-      click.increments('id').primary();
-      click.integer('linkId');
-      click.timestamps();
-    }).then(function (table) {
-      console.log('Created Table', table);
-    });
-  }
-});
-
-/************************************************************/
-// Add additional schema definitions below
-/************************************************************/
-db.knex.schema.hasTable('users').then(function(exists) {
-  if (!exists) {
-    db.knex.schema.createTable('users', function (users) {
-      users.increments('id').primary();
-      users.string('username', 50).unique();
-      users.string('password', 100);
-      users.string('currentsid', 255).unique();
-      users.timestamps();
-    }).then(function (table) {
-      console.log('Created Table', table);
-    });
-  }
-});
-
-db.knex.schema.hasTable('userlinks').then(function(exists) {
-  if (!exists) {
-    db.knex.schema.createTable('userlinks', function (userlinks) {
-      userlinks.increments('id').primary();
-      userlinks.string('username', 50).references('users.username');
-      userlinks.integer('userlink').references('urls.id');
-      userlinks.timestamps();
-    }).then(function (table) {
-      console.log('Created Table', table);
-    });
-  }
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  // we're connected!
+  console.log('Connected to mongodb://localhost:27017');
 });
 
 module.exports = db;
+
+
+
+
+
+var usersSchema = mongoose.Schema({
+  id: mongoose.Schema.Types.ObjectId,
+  username: String,
+  password: String,
+  currentsid: String,
+  timestamp: {type: Date, default: Date.now }
+});
+var userLinksSchema = mongoose.Schema({
+  id: mongoose.Schema.Types.ObjectId,
+  username: String,
+  userlink: Number,
+  timestamp: {type: Date, default: Date.now }
+});
+
+db.usersModel = mongoose.model('usersModel', usersSchema);
+db.usersLinksModel = mongoose.model('usersLinksModel', userLinksSchema);

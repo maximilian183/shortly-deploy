@@ -1,6 +1,7 @@
 var db = require('../config');
 var bcrypt = require('bcrypt-nodejs');
 var Promise = require('bluebird');
+var mongoose = require('mongoose');
 
 var User = db.Model.extend({
   tableName: 'users',
@@ -17,7 +18,7 @@ var User = db.Model.extend({
       .then(function(results) {
         callback(results);
       })
-      .catch(function(error){
+      .catch(function(error) {
         console.log('ERROR', error);
       });
     });
@@ -34,7 +35,7 @@ var User = db.Model.extend({
         model.save({
           currentsid: model.get('currentsid')
         })
-        .then(function(){
+        .then(function() {
           callback(PASS_MATCH);
         });
       }
